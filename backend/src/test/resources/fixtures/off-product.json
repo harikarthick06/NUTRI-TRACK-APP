@@ -1,0 +1,28 @@
+{
+  "code": "8901058000290",
+  "status": 1,
+  "status_verbose": "product found",
+  "product": {
+    "code": "8901058000290",
+    "product_name": "Masala instant noodles",
+    "brands": "Example brand, Example parent",
+    "categories": "Foods, Pastas, Noodles, Instant noodles",
+    "serving_size": "70 g",
+    "serving_quantity": 70,
+    "product_quantity_unit": "g",
+    "nutriments": {
+      "energy-kcal_100g": 427,
+      "proteins_100g": 8.9,
+      "carbohydrates_100g": 60.6,
+      "sugars_100g": 2.2,
+      "fat_100g": 16.6,
+      "saturated-fat_100g": 7.6,
+      "trans-fat_100g": 0,
+      "fiber_100g": 2.1,
+      "sodium_100g": 1.2,
+      "iron_100g": 0.0035,
+      "vitamin-a_100g": 0.0001,
+      "salt_100g": 3
+    }
+  }
+}

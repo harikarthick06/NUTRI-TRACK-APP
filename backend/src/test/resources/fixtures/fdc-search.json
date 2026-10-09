@@ -1,0 +1,9 @@
+{
+  "totalHits": 1,
+  "foods": [
+    {"fdcId": 168878, "description": "Rice, white, long-grain, regular, unenriched, cooked without salt", "dataType": "SR Legacy",
+     "foodNutrients": [{"nutrientId": 1008, "nutrientName": "Energy", "nutrientNumber": "208", "unitName": "KCAL", "value": 130}]},
+    {"fdcId": 2000001, "description": "IDLI RICE CAKES", "dataType": "Branded", "brandOwner": "Example Foods Pvt Ltd", "brandName": "EXAMPLE",
+     "foodNutrients": []}
+  ]
+}

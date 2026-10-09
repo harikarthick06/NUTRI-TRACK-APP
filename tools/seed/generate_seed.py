@@ -220,9 +220,9 @@ DGA_LIMITS = {
 # --------------------------------------------------------------------------------------
 IFCT_FOODS = {
     # code: (display name override or None, category override or None)
-    "A015": ("Rice, raw, milled (white, uncooked)", None),
-    "A014": ("Rice, parboiled, milled (uncooked)", None),
-    "A013": ("Rice, brown, raw (uncooked)", None),
+    "A015": ("Rice, white, raw (milled)", None),
+    "A014": ("Rice, parboiled, raw (milled)", None),
+    "A013": ("Rice, brown, raw", None),
     "A011": ("Rice flakes (poha / aval)", None),
     "A012": ("Rice, puffed (pori / murmura)", None),
     "A010": ("Ragi (finger millet), whole grain", None),

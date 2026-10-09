@@ -1,0 +1,23 @@
+{
+  "fdcId": 168878,
+  "description": "Rice, white, long-grain, regular, unenriched, cooked without salt",
+  "dataType": "SR Legacy",
+  "foodCategory": {"description": "Cereal Grains and Pasta"},
+  "foodNutrients": [
+    {"type": "FoodNutrient", "nutrient": {"id": 1008, "number": "208", "name": "Energy", "unitName": "kcal"}, "amount": 130},
+    {"type": "FoodNutrient", "nutrient": {"id": 1062, "number": "268", "name": "Energy", "unitName": "kJ"}, "amount": 544},
+    {"type": "FoodNutrient", "nutrient": {"id": 1003, "number": "203", "name": "Protein", "unitName": "g"}, "amount": 2.69},
+    {"type": "FoodNutrient", "nutrient": {"id": 1004, "number": "204", "name": "Total lipid (fat)", "unitName": "g"}, "amount": 0.28},
+    {"type": "FoodNutrient", "nutrient": {"id": 1005, "number": "205", "name": "Carbohydrate, by difference", "unitName": "g"}, "amount": 28.17},
+    {"type": "FoodNutrient", "nutrient": {"id": 1079, "number": "291", "name": "Fiber, total dietary", "unitName": "g"}, "amount": 0.4},
+    {"type": "FoodNutrient", "nutrient": {"id": 1089, "number": "303", "name": "Iron, Fe", "unitName": "mg"}, "amount": 0.2},
+    {"type": "FoodNutrient", "nutrient": {"id": 1099, "number": "313", "name": "Fluoride, F", "unitName": "µg"}, "amount": 37.5},
+    {"type": "FoodNutrient", "nutrient": {"id": 1110, "number": "324", "name": "Vitamin D (D2 + D3), International Units", "unitName": "IU"}, "amount": 0},
+    {"type": "FoodNutrient", "nutrient": {"id": 1104, "number": "318", "name": "Vitamin A, IU", "unitName": "IU"}, "amount": 0},
+    {"type": "FoodNutrient", "nutrient": {"id": 1103, "number": "317", "name": "Selenium, Se", "unitName": "µg"}}
+  ],
+  "foodPortions": [
+    {"id": 1, "amount": 1, "gramWeight": 158, "modifier": "cup", "measureUnit": {"id": 9999, "name": "undetermined"}, "portionDescription": ""},
+    {"id": 2, "amount": 1, "gramWeight": 0, "modifier": "bad", "measureUnit": {"id": 9999, "name": "undetermined"}}
+  ]
+}

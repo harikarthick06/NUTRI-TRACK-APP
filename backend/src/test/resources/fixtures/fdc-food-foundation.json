@@ -1,0 +1,15 @@
+{
+  "fdcId": 2346393,
+  "description": "Chicken, breast, boneless, skinless, raw",
+  "dataType": "Foundation",
+  "foodCategory": {"description": "Poultry Products"},
+  "foodNutrients": [
+    {"type": "FoodNutrient", "nutrient": {"id": 2047, "number": "957", "name": "Energy (Atwater General Factors)", "unitName": "kcal"}, "amount": 118},
+    {"type": "FoodNutrient", "nutrient": {"id": 2048, "number": "958", "name": "Energy (Atwater Specific Factors)", "unitName": "kcal"}, "amount": 115},
+    {"type": "FoodNutrient", "nutrient": {"id": 1003, "number": "203", "name": "Protein", "unitName": "g"}, "amount": 22.5},
+    {"type": "FoodNutrient", "nutrient": {"id": 1063, "number": "269.3", "name": "Sugars, Total", "unitName": "g"}, "amount": 0}
+  ],
+  "foodPortions": [
+    {"id": 3, "amount": 1, "gramWeight": 174, "measureUnit": {"id": 1043, "name": "piece"}, "portionDescription": "1 breast"}
+  ]
+}
