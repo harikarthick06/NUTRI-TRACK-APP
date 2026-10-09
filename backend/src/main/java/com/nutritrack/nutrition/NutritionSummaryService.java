@@ -138,8 +138,11 @@ public class NutritionSummaryService {
             status = TargetStatus.BELOW_TARGET;
         }
         List<String> notes = new ArrayList<>(r.notes());
-        if (coverage == DataCoverage.PARTIAL) {
+        if (coverage == DataCoverage.PARTIAL && withData < entries) {
             notes.add("Only " + withData + " of " + entries + " logged foods have data for this nutrient, "
+                    + "so the real total is probably higher");
+        } else if (coverage == DataCoverage.PARTIAL) {
+            notes.add("Some ingredients of the logged dishes have no data for this nutrient, "
                     + "so the real total is probably higher");
         }
         if (r.upperLimit() != null && !r.upperLimitComparable()) {

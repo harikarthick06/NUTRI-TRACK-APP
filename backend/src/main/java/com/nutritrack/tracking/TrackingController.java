@@ -34,7 +34,7 @@ public class TrackingController {
         this.water = water;
     }
 
-    @GetMapping("/api/weight-logs")
+    @GetMapping({"/api/weight-logs", "/api/analytics/weight"})
     @Operation(summary = "Weight entries in a date range (default: last 90 days) with summary statistics")
     public WeightHistory weightHistory(@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate from,
                                        @RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate to) {

@@ -9,7 +9,11 @@ export default defineConfig({
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
   },
-  server: { port: 5173 },
+  server: {
+    port: 5173,
+    // Same-origin API calls in development, so the HttpOnly refresh cookie works without CORS.
+    proxy: { "/api": { target: process.env.VITE_DEV_API_PROXY ?? "http://localhost:8080", changeOrigin: false } },
+  },
   test: {
     environment: "jsdom",
     globals: true,

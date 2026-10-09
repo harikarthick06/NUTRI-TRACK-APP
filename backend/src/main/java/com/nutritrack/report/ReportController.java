@@ -30,19 +30,19 @@ public class ReportController {
         this.exports = exports;
     }
 
-    @GetMapping("/api/reports/weekly")
+    @GetMapping({"/api/reports/weekly", "/api/nutrition/weekly"})
     @Operation(summary = "Monday-Sunday report for the week containing the date (default: this week)")
     public RangeReport weekly(@RequestParam(required = false) @DateTimeFormat(iso = ISO.DATE) LocalDate date) {
         return reports.weekly(date);
     }
 
-    @GetMapping("/api/reports/monthly")
+    @GetMapping({"/api/reports/monthly", "/api/nutrition/monthly"})
     @Operation(summary = "Report for a calendar month, e.g. month=2026-10 (default: this month)")
     public RangeReport monthly(@RequestParam(required = false) YearMonth month) {
         return reports.monthly(month);
     }
 
-    @GetMapping("/api/reports/custom")
+    @GetMapping({"/api/reports/custom", "/api/analytics/nutrition"})
     @Operation(summary = "Report for any range of up to 366 days")
     public RangeReport custom(@RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
                               @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to) {
@@ -68,13 +68,13 @@ public class ReportController {
         return csv(exports.dailyReport(date), "nutritrack-daily-" + date + ".csv");
     }
 
-    @GetMapping("/api/exports/diary.csv")
+    @GetMapping({"/api/exports/diary.csv", "/api/export/diary"})
     public ResponseEntity<byte[]> diaryCsv(@RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
                                            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to) {
         return csv(exports.diary(from, to), "nutritrack-diary-" + from + "-to-" + to + ".csv");
     }
 
-    @GetMapping("/api/exports/nutrient-summary.csv")
+    @GetMapping({"/api/exports/nutrient-summary.csv", "/api/export/nutrition"})
     public ResponseEntity<byte[]> summaryCsv(@RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
                                              @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to) {
         return csv(exports.nutrientSummary(from, to), "nutritrack-nutrients-" + from + "-to-" + to + ".csv");
