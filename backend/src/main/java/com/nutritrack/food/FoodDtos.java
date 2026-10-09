@@ -48,7 +48,7 @@ public final class FoodDtos {
                              BigDecimal completenessPct, String localNames, String barcode,
                              BigDecimal ediblePortionPct, BigDecimal cookedYieldFactor, String cookedYieldNote,
                              String notes, Long recipeId, List<FoodNutrientDto> nutrients, List<PortionDto> portions,
-                             EnergyCheck energyCheck, boolean favorite, boolean owned) {
+                             List<String> supportedUnits, EnergyCheck energyCheck, boolean favorite, boolean owned) {
     }
 
     public record PortionInput(

@@ -51,6 +51,12 @@ public class FoodPortion {
         this.sourceNote = sourceNote;
     }
 
+    /** Updates label and weight in place (recipe portions keep their id so diary links survive). */
+    public void update(String label, BigDecimal basisAmount) {
+        this.label = label;
+        this.basisAmount = basisAmount;
+    }
+
     public Long getId() { return id; }
     public Long getFoodId() { return foodId; }
     public String getLabel() { return label; }

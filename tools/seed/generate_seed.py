@@ -320,6 +320,8 @@ IFCT_FOODS = {
     "Q002": ("Crab, sea, raw", None),
     "R004": ("Squid, raw", None),
 }
+# Foods kept although their published energy is rejected as implausible (see ifct_energy_plausible).
+IFCT_ENERGY_EXCLUDED = {"N001"}
 IFCT_PLANT_GROUPS = {
     "Cereals and Millets", "Grain Legumes", "Green Leafy Vegetables", "Other Vegetables", "Fruits",
     "Roots and Tubers", "Condiments and Spices", "Nuts and Oil Seeds", "Sugars", "Mushrooms",
@@ -450,6 +452,18 @@ def sql_num(v) -> str:
 G_TO = {"G": Decimal(1), "MG": Decimal(1000), "UG": Decimal(1000000)}
 
 
+def ifct_energy_estimate_kj(r: dict) -> Decimal:
+    """IFCT 2017's own energy factors: protein 17, fat 37, available carbohydrate 17, fibre 8 kJ/g."""
+    g = lambda col: dec(r.get(col)) or Decimal(0)
+    return 17 * g("protcnt") + 37 * g("fatce") + 17 * g("choavldf") + 8 * g("fibtg")
+
+
+def ifct_energy_plausible(r: dict, energy_kj: Decimal) -> bool:
+    """Rejects energy values more than 50% away from IFCT's own factor estimate (data-entry errors)."""
+    est = ifct_energy_estimate_kj(r)
+    return est == 0 or abs(energy_kj - est) / energy_kj <= Decimal("0.5")
+
+
 def ifct_nutrients(r: dict) -> dict[str, tuple[Decimal, str]]:
     """Map one IFCT row (grams per 100 g) to canonical units. Zeros are treated as unknown."""
 
@@ -464,6 +478,8 @@ def ifct_nutrients(r: dict) -> dict[str, tuple[Decimal, str]]:
             out[code] = (value, origin)
 
     energy_kj = v("enerc")
+    if energy_kj is not None and not ifct_energy_plausible(r, energy_kj):
+        energy_kj = None
     put("ENERGY_KCAL", energy_kj / Decimal("4.184") if energy_kj else None)
     put("WATER", v("water"))
     put("PROTEIN", v("protcnt"))
@@ -609,14 +625,14 @@ RECIPES = [
     ("chapati", "Chapati / roti", "Whole wheat flatbread with a little oil.",
      300, "1 medium chapati", 40,
      [((I, "A019"), 200), ((S, "04506"), 10), ((S, "02047"), 2)]),
-    ("chicken_curry", "Chicken curry (Tamil style)", "Chicken leg pieces cooked with onion, tomato, coconut and spices.",
+    ("chicken_curry", "Chicken curry (Tamil style)", "Chicken thigh pieces cooked with onion, tomato, coconut and spices.",
      900, "1 katori (150 g)", 150,
-     [((I, "N001"), 500), ((I, "G017"), 200), ((I, "D076"), 150), ((I, "G014"), 15), ((I, "G011"), 15),
+     [((I, "N002"), 500), ((I, "G017"), 200), ((I, "D076"), 150), ((I, "G014"), 15), ((I, "G011"), 15),
       ((I, "G022"), 8), ((I, "G024"), 10), ((I, "G033"), 2), ((I, "H007"), 50), ((S, "04042"), 40),
       ((I, "G010"), 5), ((S, "02047"), 10)]),
     ("chicken_biryani", "Chicken biryani", "Rice layered with spiced chicken, curd, onion, ghee and oil.",
      1900, "1 plate (300 g)", 300,
-     [((I, "A015"), 400), ((I, "N001"), 500), ((I, "G017"), 200), ((I, "D076"), 100), ((S, "01116"), 100),
+     [((I, "A015"), 400), ((I, "N002"), 500), ((I, "G017"), 200), ((I, "D076"), 100), ((S, "01116"), 100),
       ((S, "01003"), 30), ((S, "04506"), 30), ((I, "G014"), 15), ((I, "G011"), 15), ((I, "G008"), 10),
       ((I, "G009"), 15), ((S, "02047"), 12)]),
     ("dal_tadka", "Dal (paruppu / dal tadka)", "Toor dal cooked soft and tempered with ghee, cumin and garlic.",
@@ -774,7 +790,7 @@ def build_v3(ifct_dir: Path, sr_dir: Path) -> str:
     for code, (name, cat) in IFCT_FOODS.items():
         r = ifct_rows[code]
         nutrients = ifct_nutrients(r)
-        if "ENERGY_KCAL" not in nutrients:
+        if "ENERGY_KCAL" not in nutrients and code not in IFCT_ENERGY_EXCLUDED:
             raise SystemExit(f"IFCT {code} has no energy value; pick another food")
         yf, yn = (None, None)
         if code in IFCT_BORROWED_YIELDS:
@@ -791,8 +807,13 @@ def build_v3(ifct_dir: Path, sr_dir: Path) -> str:
             prep = "RAW"
         add_added_sugar(nutrients, (I, code))
         local = r.get("lang") or None
+        note = f"IFCT 2017 food {code}: {r['name']}"
+        kj = dec(r.get("enerc"))
+        if kj and not ifct_energy_plausible(r, kj):
+            note += (f". The published energy ({kj} kJ) disagrees with its protein, fat and carbohydrate "
+                     f"(about {ifct_energy_estimate_kj(r):.0f} kJ), so energy is left unknown")
         out.append(food_insert("IFCT_2017", code, name or r["name"], cat or r["grup"], "GENERIC", prep, local, None, yf, yn,
-                               f"IFCT 2017 food {code}: {r['name']}"))
+                               note))
         out.extend(nutrient_inserts("IFCT_2017", code, nutrients))
         for label, unit, grams in TYPICAL_PORTIONS.get(code, []):
             out.append(portion_insert("IFCT_2017", code, label, unit, 1, grams, True, TYPICAL_PORTION_NOTE))

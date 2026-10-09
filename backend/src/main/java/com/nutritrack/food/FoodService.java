@@ -19,6 +19,7 @@ import com.nutritrack.food.provider.ProviderDtos.ImportedFood;
 import com.nutritrack.nutrient.NutrientCatalog;
 import com.nutritrack.nutrient.NutrientCodes;
 import com.nutritrack.nutrient.NutrientDefinition;
+import com.nutritrack.nutrition.QuantityResolver;
 import com.nutritrack.security.CurrentUser;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -205,15 +206,16 @@ public class FoodService {
                     v == null ? null : v.getValueOrigin(), v == null ? null : v.getCoveragePct()));
         }
         FoodDataSource src = sources.findById(f.getSourceId()).orElseThrow();
-        List<PortionDto> portionDtos = portions.findByFoodIdOrderByIdAsc(f.getId()).stream().map(FoodService::toDto)
-                .toList();
+        List<FoodPortion> foodPortions = portions.findByFoodIdOrderByIdAsc(f.getId());
+        List<PortionDto> portionDtos = foodPortions.stream().map(FoodService::toDto).toList();
         boolean favorite = !favoriteIds(uid, List.of(f.getId())).isEmpty();
         return new FoodDetail(f.getId(), f.getName(), f.getBrand(), f.getCategory(), f.getFoodType(),
                 f.getPreparationState(), f.getBasisQuantity(), f.getBasisUnit(), f.getDataQuality(),
                 new SourceDto(src.getCode(), src.getName(), src.getUrl(), src.getVersion(), src.getLicenseNote()),
                 f.getSourceFoodRef(), f.getCompletenessPct(), f.getLocalNames(), f.getBarcode(),
                 f.getEdiblePortionPct(), f.getCookedYieldFactor(), f.getCookedYieldNote(), f.getNotes(),
-                f.getRecipeId(), rows, portionDtos, energyValidator.check(byCode), favorite,
+                f.getRecipeId(), rows, portionDtos, QuantityResolver.supportedUnits(f, foodPortions),
+                energyValidator.check(byCode), favorite,
                 f.getOwnerUserId() != null && f.getOwnerUserId() == uid);
     }
 
