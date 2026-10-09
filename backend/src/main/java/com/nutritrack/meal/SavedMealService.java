@@ -168,10 +168,11 @@ public class SavedMealService {
         for (int i = 0; i < inputs.size(); i++) {
             ItemInput in = inputs.get(i);
             Food f = foodService.visibleFood(in.foodId(), uid);
-            BigDecimal basis = quantityResolver.resolve(f, portions.findByFoodIdOrderByIdAsc(f.getId()), in.quantity(),
-                    in.unit(), in.portionId(), in.weightState()).basisAmount();
+            var resolved = quantityResolver.resolve(f, portions.findByFoodIdOrderByIdAsc(f.getId()), in.quantity(),
+                    in.unit(), in.portionId(), in.weightState());
+            BigDecimal basis = resolved.basisAmount();
             rows.add(new SavedMealItem(m.getId(), f.getId(), in.quantity(), in.unit().trim().toUpperCase(),
-                    in.portionId(), in.weightState() == null ? WeightState.AS_DEFINED : in.weightState(), basis, i));
+                    resolved.portionId(), in.weightState() == null ? WeightState.AS_DEFINED : in.weightState(), basis, i));
         }
         items.saveAll(rows);
     }

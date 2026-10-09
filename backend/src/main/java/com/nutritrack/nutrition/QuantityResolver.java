@@ -51,7 +51,11 @@ public class QuantityResolver {
 
     static final List<String> PIECE_UNITS = List.of("PIECE", "SERVING", "SLICE", "BOWL");
 
-    public record Resolved(BigDecimal basisAmount, String explanation) {
+    /** {@code portionId} is the portion that was used, including one picked by unit (null for mass/volume). */
+    public record Resolved(BigDecimal basisAmount, String explanation, Long portionId) {
+        public Resolved(BigDecimal basisAmount, String explanation) {
+            this(basisAmount, explanation, null);
+        }
     }
 
     public Resolved resolve(Food food, List<FoodPortion> portions, BigDecimal quantity, String unitRaw, Long portionId,
@@ -63,6 +67,7 @@ public class QuantityResolver {
         WeightState state = weightState == null ? WeightState.AS_DEFINED : weightState;
         BigDecimal basis;
         String explanation;
+        Long usedPortion = null;
 
         if (state == WeightState.COOKED_WEIGHT_OF_RAW_FOOD) {
             return resolveCookedWeight(food, quantity, unit);
@@ -73,6 +78,7 @@ public class QuantityResolver {
                     .orElseThrow(() -> ApiException.badRequest("INVALID_PORTION", "That portion does not belong to this food"));
             basis = quantity.multiply(portion.getBasisAmount(), MC).divide(portion.getUnitQuantity(), MC);
             explanation = quantity.stripTrailingZeros().toPlainString() + " x " + portion.getLabel();
+            usedPortion = portion.getId();
         } else if (MASS.containsKey(unit)) {
             BigDecimal grams = quantity.multiply(MASS.get(unit), MC);
             if (food.getBasisUnit() == BasisUnit.G) {
@@ -104,10 +110,11 @@ public class QuantityResolver {
                     .orElseThrow(() -> noConversion(food, unit));
             basis = quantity.multiply(portion.getBasisAmount(), MC).divide(portion.getUnitQuantity(), MC);
             explanation = quantity.stripTrailingZeros().toPlainString() + " x " + portion.getLabel();
+            usedPortion = portion.getId();
         } else {
             throw ApiException.badRequest("UNKNOWN_UNIT", "Unknown unit '" + unitRaw + "'");
         }
-        return new Resolved(basis.setScale(3, RoundingMode.HALF_UP), explanation);
+        return new Resolved(basis.setScale(3, RoundingMode.HALF_UP), explanation, usedPortion);
     }
 
     private Resolved resolveCookedWeight(Food food, BigDecimal quantity, String unit) {

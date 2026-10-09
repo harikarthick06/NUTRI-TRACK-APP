@@ -82,7 +82,10 @@ class QuantityResolverTest {
     void piecesUseThePortion() {
         Food egg = food("Egg", BasisUnit.G, PreparationState.RAW, null);
         List<FoodPortion> portions = List.of(portion(14, "1 large egg", "PIECE", "1", "50", true));
-        assertThat(resolver.resolve(egg, portions, bd("2"), "piece", null, null).basisAmount()).isEqualByComparingTo("100");
+        var byUnit = resolver.resolve(egg, portions, bd("2"), "piece", null, null);
+        assertThat(byUnit.basisAmount()).isEqualByComparingTo("100");
+        assertThat(byUnit.portionId()).isEqualTo(14L);
+        assertThat(resolver.resolve(egg, portions, bd("100"), "g", null, null).portionId()).isNull();
         assertThat(resolver.resolve(egg, portions, bd("3"), "x", 14L, null).basisAmount()).isEqualByComparingTo("150");
     }
 

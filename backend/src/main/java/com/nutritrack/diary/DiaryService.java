@@ -231,7 +231,7 @@ public class DiaryService {
         var resolved = quantityResolver.resolve(food, foodPortions, quantity, unit, portionId, state);
         e.setQuantity(quantity);
         e.setUnit(unit.trim().toUpperCase());
-        e.setPortionId(portionId);
+        e.setPortionId(resolved.portionId());
         e.setWeightState(state == null ? WeightState.AS_DEFINED : state);
         e.setBasisAmount(resolved.basisAmount());
     }
