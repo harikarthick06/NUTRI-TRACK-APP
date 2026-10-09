@@ -43,12 +43,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class RecipeService {
+    private static final Pattern HAS_WEIGHT = Pattern.compile("\\(\\s*\\d+(\\.\\d+)?\\s*(g|ml)\\s*\\)", Pattern.CASE_INSENSITIVE);
+
     private static final MathContext MC = MathContext.DECIMAL64;
     static final String WHOLE_RECIPE_LABEL = "Whole recipe";
 
@@ -366,8 +369,10 @@ public class RecipeService {
         // Update the two recipe portions in place so diary entries that reference them keep their link.
         BigDecimal servingWeight = c.result().servingWeightG();
         BigDecimal wholeWeight = c.result().cookedWeightG();
-        String servingLabel = (r.getServingLabel() == null || r.getServingLabel().isBlank() ? "1 serving"
-                : r.getServingLabel()) + " (" + servingWeight.setScale(0, RoundingMode.HALF_UP) + " g)";
+        String baseLabel = r.getServingLabel() == null || r.getServingLabel().isBlank() ? "1 serving" : r.getServingLabel();
+        // Some labels already carry their weight, e.g. "1 katori (150 g)"; don't add it twice.
+        String servingLabel = HAS_WEIGHT.matcher(baseLabel).find() ? baseLabel
+                : baseLabel + " (" + servingWeight.setScale(0, RoundingMode.HALF_UP) + " g)";
         String wholeLabel = WHOLE_RECIPE_LABEL + " (" + wholeWeight.setScale(0, RoundingMode.HALF_UP) + " g)";
         List<FoodPortion> existing = portions.findByFoodIdOrderByIdAsc(food.getId());
         FoodPortion serving = existing.stream().filter(FoodPortion::isDefaultPortion).findFirst().orElse(null);

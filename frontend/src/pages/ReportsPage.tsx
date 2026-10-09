@@ -209,7 +209,7 @@ function RangeView({ report }: { report: RangeReport }) {
                     </Badge>
                   </td>
                   <td className="py-1.5 text-right tabular-nums">
-                    {n.upperLimitComparable ? (n.daysAboveUpperLimit ? <span className="text-destructive">{n.daysAboveUpperLimit}</span> : 0) : "—"}
+                    {n.upperLimitComparable && n.daysWithData > 0 ? (n.daysAboveUpperLimit ? <span className="text-destructive">{n.daysAboveUpperLimit}</span> : 0) : "—"}
                   </td>
                 </tr>
               ))}
