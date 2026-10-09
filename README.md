@@ -48,7 +48,33 @@ supplements, and treats a value it doesn't know as **unknown**, never as zero.
 | Database | MySQL 8 with Flyway migrations |
 | Tests | JUnit 5 + Mockito + MockMvc integration tests (backend), Vitest + React Testing Library (frontend) |
 
-## Quick start
+## Quick start (Docker, recommended)
+
+You only need [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine with
+the compose plugin). Make sure Docker is running, then from the repository folder:
+
+```bash
+./setup.sh          # macOS / Linux
+.\setup.ps1         # Windows PowerShell
+```
+
+The script creates `.env` with random database passwords and a JWT secret (it never overwrites values
+you've set), builds the app and starts three containers: MySQL, the API and the web app. When it
+prints the address, open **http://localhost:3000**, create an account and follow the onboarding.
+
+| Task | Command |
+|---|---|
+| Stop the app | `docker compose down` (your data stays in the `db-data` volume) |
+| Start it again | `./setup.sh` or `docker compose up -d` |
+| See logs | `docker compose logs -f backend` |
+| Update after `git pull` | `./setup.sh` (rebuilds the images) |
+| Use another port | set `APP_PORT=8088` in `.env`, then rerun the script |
+| Delete everything, including data | `docker compose down -v` |
+
+Online food search is off by default. To use it, add a USDA key or enable Open Food Facts in `.env`
+(see [docs/configuration.md](docs/configuration.md)) and rerun the script.
+
+## Manual setup (for development)
 
 You need Java 21, Maven 3.9+, Node.js 20.19+ (or 22.12+) and MySQL 8.
 
@@ -70,8 +96,7 @@ cd backend && mvn spring-boot:run
 cd frontend && npm install && npm run dev
 ```
 
-Open http://localhost:5173, create an account and follow the onboarding. The API documentation is
-at http://localhost:8080/swagger-ui.html.
+Open http://localhost:5173. The API documentation is at http://localhost:8080/swagger-ui.html.
 
 ## Tests
 
@@ -88,6 +113,7 @@ The integration tests need an empty `nutritrack_test` database the `nutritrack` 
 ## Project layout
 
 ```
+docker-compose.yml, setup.sh, setup.ps1   One-command Docker setup
 backend/    Spring Boot API (com.nutritrack.*) and Flyway migrations (src/main/resources/db/migration)
 frontend/   React app (src/pages, src/components, src/hooks/queries.ts, src/lib/api.ts)
 tools/seed/ Script that generates the seed-data migrations from IFCT 2017 and USDA SR28

@@ -1,5 +1,24 @@
 # Troubleshooting
 
+## Docker setup
+
+**"Docker is installed but not running"**
+Start Docker Desktop and wait until it says it's running, then rerun the script.
+
+**`port is already allocated` for 3000**
+Another program uses port 3000. Set `APP_PORT=8088` (or any free port) in `.env` and rerun the script.
+
+**`Access denied for user 'nutritrack'` in `docker compose logs backend` after editing `.env`**
+MySQL keeps the password it was first created with. Put the original `DB_PASSWORD` back, or start
+over with `docker compose down -v` (this deletes all data).
+
+**On Windows: "running scripts is disabled on this system"**
+Run `powershell -ExecutionPolicy Bypass -File .\setup.ps1` instead.
+
+**The script waits and then says the app didn't start**
+Look at `docker compose logs backend`. The first start creates the database and loads the food
+data, which can take a minute on a slow machine; rerunning the script is safe.
+
 ## Backend won't start
 
 **`JWT_SECRET is not set` / `must be base64 encoded` / `must decode to at least 32 bytes`**

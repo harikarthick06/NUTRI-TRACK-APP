@@ -1,0 +1,47 @@
+# One-command setup: ./setup.sh (macOS/Linux) or .\setup.ps1 (Windows), then open http://localhost:3000.
+# Secrets come from .env, which the setup script creates with random values. Never commit .env.
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: nutritrack
+      MYSQL_USER: nutritrack
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is missing; run the setup script}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD is missing; run the setup script}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$$MYSQL_ROOT_PASSWORD\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:mysql://db:3306/nutritrack?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      DB_USERNAME: nutritrack
+      DB_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is missing; run the setup script}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      USDA_FDC_ENABLED: ${USDA_FDC_ENABLED:-false}
+      USDA_FDC_API_KEY: ${USDA_FDC_API_KEY:-}
+      OPENFOODFACTS_ENABLED: ${OPENFOODFACTS_ENABLED:-false}
+      OPENFOODFACTS_USER_AGENT: ${OPENFOODFACTS_USER_AGENT:-NutriTrack/1.0 (contact not configured)}
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${APP_PORT:-3000}:80"
+
+volumes:
+  db-data:

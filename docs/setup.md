@@ -1,5 +1,8 @@
 # Setup
 
+The quickest way to run NutriTrack is the Docker setup in the [README](../README.md#quick-start-docker-recommended):
+one script starts MySQL, the API and the web app. This page covers running the parts yourself.
+
 ## Requirements
 
 | Tool | Version |
